@@ -10,7 +10,8 @@ import com.viartemev.requestmapper.model.Path
 import com.viartemev.requestmapper.model.PopupPath
 import com.viartemev.requestmapper.model.RequestedUserPath
 
-class RequestMappingModel(project: Project) : FilteringGotoByModel<FileType>(project, arrayOf(RequestMappingContributor(JavaAnnotationSearcher::search))), DumbAware, CustomMatcherModel {
+class RequestMappingModel(project: Project) :
+    FilteringGotoByModel<FileType>(project, arrayOf(RequestMappingContributor(JavaAnnotationSearcher::search))), DumbAware, CustomMatcherModel {
 
     override fun filterValueFor(item: NavigationItem): FileType? = null
 

@@ -1,9 +1,6 @@
 package com.viartemev.requestmapper.annotations.micronaut
 
-import com.intellij.psi.PsiAnnotation
-import com.intellij.psi.PsiLiteralExpression
-import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiReferenceExpression
+import com.intellij.psi.*
 import com.viartemev.requestmapper.RequestMappingItem
 import com.viartemev.requestmapper.annotations.MappingAnnotation
 import com.viartemev.requestmapper.annotations.PathAnnotation
@@ -50,13 +47,17 @@ abstract class MicronautMappingAnnotation(
         val parametersNameWithType = method
             .parameterList
             .parameters
-            .mapNotNull { PathParameter(it).extractParameterNameWithType(PATH_VARIABLE_ANNOTATION, ::extractParameterNameFromAnnotation) ?: Pair(it.name!!, it.type.presentableText.unquote()) }
+            .map(::parameterNameAndType)
             .toMap()
 
         return PathAnnotation(annotation).fetchMappings(ATTRIBUTE_NAME)
             .map { Path(it).addPathVariablesTypes(parametersNameWithType).toFullPath() }
             .firstOrNull() ?: ""
     }
+
+    private fun parameterNameAndType(it: PsiParameter) =
+        (PathParameter(it).extractParameterNameWithType(PATH_VARIABLE_ANNOTATION, ::extractParameterNameFromAnnotation)
+            ?: Pair(it.name!!, it.type.presentableText.unquote()))
 
     private fun extractParameterNameFromAnnotation(annotation: PsiAnnotation, defaultValue: String): String {
         val pathVariableValue = annotation.findAttributeValue(ATTRIBUTE_NAME)

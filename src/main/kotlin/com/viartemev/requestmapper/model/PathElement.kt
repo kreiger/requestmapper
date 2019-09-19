@@ -9,8 +9,11 @@ import org.apache.commons.lang.StringEscapeUtils
 class PathElement(val value: String) {
     val isPathVariable: Boolean = value.inCurlyBrackets()
 
-    fun addPathVariableType(type: String) = if (isPathVariable) PathElement(value.unquoteCurlyBrackets().let { "${if (type.isBlank()) "String" else type}:$it" }.addCurlyBrackets())
-    else this
+    fun map(function: (String) -> String) = if (!isPathVariable) this
+    else PathElement(value.unquoteCurlyBrackets().let(function).addCurlyBrackets())
+
+    fun flatMap(function: (String) -> Iterable<String>) = if (!isPathVariable) listOf(this)
+    else value.unquoteCurlyBrackets().let(function).map(String::addCurlyBrackets).map(::PathElement)
 
     private fun compareWithPathVariable(pathElement: PathElement, searchPattern: PathElement): Boolean =
         if (pathElement.isPathVariable && searchPattern.isPathVariable) {

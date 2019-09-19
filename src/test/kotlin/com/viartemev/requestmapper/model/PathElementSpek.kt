@@ -24,17 +24,17 @@ object PathElementSpek : Spek({
         context("addPathVariableType on a path element without curly brackets") {
             it("should return the original element") {
                 val originalPath = "id"
-                PathElement(originalPath).addPathVariableType("String").value shouldEqual originalPath
+                PathElement(originalPath).map { "${"String"}:$it" }.value shouldEqual originalPath
             }
         }
         context("addPathVariableType on a path element with curly brackets") {
             it("should return the original element with a type") {
-                PathElement("{id}").addPathVariableType("String").value shouldEqual "{String:id}"
+                PathElement("{id}").map { "${"String"}:$it" }.value shouldEqual "{String:id}"
             }
         }
         context("addPathVariableType on a path element with curly brackets with a blank type") {
             it("should return the original element with a type String") {
-                PathElement("{id}").addPathVariableType("").value shouldEqual "{String:id}"
+                PathElement("{id}").map { "${""}:$it" }.value shouldEqual "{String:id}"
             }
         }
 
